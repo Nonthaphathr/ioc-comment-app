@@ -274,7 +274,14 @@ setupPwaIcons();
 
 
 /* ===== ตัวดูเอกสารต้นฉบับ (pdf.js) ===== */
-const DOCS={1:{url:"ioc-expert1.pdf",title:"แบบประเมิน IOC ฉบับสแกน"}};
+const DOCS={};[1,2,3,4,5].forEach(i=>DOCS[i]={url:"ioc-expert"+i+".pdf",title:"แบบประเมิน IOC ฉบับสแกน"});
+/* หน้าในไฟล์สแกน (8 หน้า) ที่มีข้อนั้น: ตอน 2 และ 3 */
+function pageFor(p,n){
+  if(p===2) return n<=8?3:(n<=19?4:5);
+  if(p===3) return n<=9?6:(n<=20?7:8);
+  if(p===0) return 8;
+  return null;
+}
 const PDFJS="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
 let viewerOn=sessionStorageGet("viewer")==="1", vDoc=null, vDocE=null, vPage=1, vZoom=1, vTask=null;
 function docBtn(e){return DOCS[e]?'<button class="iconbtn'+(viewerOn?' primary':'')+'" data-viewer="1" aria-label="ดูเอกสารต้นฉบับ">📄<span class="itxt"> เอกสาร</span></button>':""}
@@ -305,11 +312,11 @@ async function drawPage(){
   vTask=pg.render({canvasContext:cv.getContext("2d"),viewport:vp});
   try{await vTask.promise}catch(_){}
 }
-async function openDoc(e){
-  if(vDocE===e&&vDoc){drawPage();return}
+async function openDoc(e,pg){
+  if(vDocE===e&&vDoc){if(pg){vPage=Math.min(vDoc.numPages,pg);sessionStorageSet("docpage"+e,vPage)} drawPage();return}
   const sc=$("#vscroll"); sc.innerHTML='<div class="vmsg">กำลังโหลดเอกสาร…</div>'; $("#vtitle").textContent=DOCS[e].title;
   try{await loadPdfJs(); vDoc=await pdfjsLib.getDocument(DOCS[e].url).promise; vDocE=e;
-    vPage=Math.min(vDoc.numPages,+(sessionStorageGet("docpage"+e)||1)); sc.innerHTML=""; drawPage()}
+    vPage=Math.min(vDoc.numPages,pg||+(sessionStorageGet("docpage"+e)||1)); sc.innerHTML=""; drawPage()}
   catch(err){sc.innerHTML='<div class="vmsg">เปิดเอกสารไม่ได้: '+esc(err.message||err)+'</div>'}
 }
 function setViewer(on){viewerOn=on; sessionStorageSet("viewer",on?"1":"0"); applyViewer(lastRoute||route())}
@@ -318,7 +325,7 @@ function applyViewer(r){
   const show=viewerOn&&r&&r.v!=="home"&&DOCS[r.e];
   document.body.classList.toggle("vw",!!show);
   if(!show) return;
-  ensureViewer(); openDoc(r.e);
+  ensureViewer(); openDoc(r.e,r.v==="item"?pageFor(r.p,r.n):null);
 }
 
 let lastRoute=null;
