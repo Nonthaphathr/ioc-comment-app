@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="IOC ข้อเสนอแนะ">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script>
+window.__bip=null;
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();window.__bip=e;window.dispatchEvent(new Event("bip-ready"))});
+if("serviceWorker" in navigator && location.protocol==="https:"){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+</script>
+<title>บันทึกข้อเสนอแนะผู้เชี่ยวชาญ IOC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: one-column mobile-first stack; home = 5 expert cards, expert = rows of 5 number chips per dimension, item = question card + comment box + sticky prev/next bar */
+:root{
+  --bg:#f2f5f7; --surface:#ffffff; --ink:#16212b; --muted:#566574; --line:#d6dee5;
+  --accent:#0f766e; --accent-ink:#ffffff; --accent-soft:#d5eeea; --bad:#b42318; --ok:#157f3b; --warn:#a15c07;
+  --font-body:"Sarabun","Noto Sans Thai",system-ui,sans-serif; --font-display:"Prompt","Sarabun",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161c; --surface:#18222b; --ink:#e7edf2; --muted:#9aabb9; --line:#2b3a47;
+  --accent:#3fb8aa; --accent-ink:#06201d; --accent-soft:#16363a; --bad:#ff8a7e; --ok:#5fd18a; --warn:#f2b45a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161c; --surface:#18222b; --ink:#e7edf2; --muted:#9aabb9; --line:#2b3a47;
+  --accent:#3fb8aa; --accent-ink:#06201d; --accent-soft:#16363a; --bad:#ff8a7e; --ok:#5fd18a; --warn:#f2b45a; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.55;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px calc(24px + env(safe-area-inset-bottom))}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top)) 0 10px}
+.top .row{display:flex;align-items:center;gap:10px;max-width:680px;margin:0 auto;padding:0 16px}
+.top h1{font:600 1.05rem/1.25 var(--font-display);margin:0;flex:1;min-width:0;text-wrap:balance}
+.top h1 small{display:block;font:400 .8rem var(--font-body);color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.iconbtn{border:1px solid var(--line);background:var(--surface);border-radius:12px;min-width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 12px;font-weight:600}
+.iconbtn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;color:var(--muted)}
+.live i{width:9px;height:9px;border-radius:50%;background:var(--warn);display:inline-block}
+.live.on i{background:var(--ok)} .live.off i{background:var(--bad)}
+.intro{margin:18px 0 14px;color:var(--muted);font-size:.95rem}
+.cards{display:grid;gap:12px}
+.card{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-height:72px}
+.card:active{background:var(--accent-soft)}
+.num{flex:none;width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:600 1.15rem var(--font-display)}
+.card .who{flex:1;min-width:0}
+.card b{display:block;font-weight:600;line-height:1.3}
+.card span.pos{display:block;color:var(--muted);font-size:.85rem;line-height:1.35}
+.badge{flex:none;text-align:center;font-variant-numeric:tabular-nums;font-weight:600;color:var(--accent);line-height:1.1}
+.badge small{display:block;font-weight:400;color:var(--muted);font-size:.72rem}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:5px;margin:16px 0}
+.tabs button{border:0;background:transparent;border-radius:10px;min-height:44px;font-weight:600;color:var(--muted);line-height:1.2}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.tabs button small{display:block;font-weight:400;font-size:.72rem;opacity:.9}
+.ptitle{font:600 .95rem var(--font-display);margin:4px 0 12px}
+.group{margin:0 0 18px}
+.group h3{margin:0 0 8px;font-size:.92rem;font-weight:600;color:var(--muted)}
+.chips{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.chip{position:relative;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;min-height:54px;font:600 1.1rem var(--font-display);font-variant-numeric:tabular-nums}
+.chip small{display:block;font:400 .68rem var(--font-body);color:var(--muted);line-height:1}
+.chip.has{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip.has small{color:var(--accent-ink);opacity:.85}
+.legend{display:flex;gap:16px;font-size:.82rem;color:var(--muted);margin:0 0 14px;flex-wrap:wrap}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px;border:1.5px solid var(--line);background:var(--surface)}
+.legend i.has{background:var(--accent);border-color:var(--accent)}
+.q{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin:16px 0 14px}
+.q .meta{font-size:.82rem;color:var(--muted);margin-bottom:6px}
+.q p{margin:0;font-size:1.05rem}
+.q ul{margin:8px 0 0;padding-left:20px;color:var(--muted)}
+label.lbl{display:block;font-weight:600;margin:0 0 6px}
+textarea{width:100%;min-height:210px;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;font:inherit;font-size:1.05rem;background:var(--surface);color:var(--ink);resize:vertical}
+textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.status{min-height:26px;margin:8px 2px 0;font-size:.85rem;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.status.ok{color:var(--ok)} .status.err{color:var(--bad)} .status button{border:1px solid currentColor;background:transparent;border-radius:8px;padding:2px 10px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.bar .in{max-width:680px;margin:0 auto;display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.bar button{min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-weight:600}
+.bar button.next{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.bar button:disabled{opacity:.4}
+.bar .pos{font-size:.8rem;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums}
+.pad-bar{height:96px}
+dialog{border:0;padding:0;background:transparent;max-width:none;width:100%;margin:auto 0 0;color:var(--ink)}
+dialog::backdrop{background:rgba(10,18,25,.55)}
+.sheet{background:var(--surface);border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-width:680px;margin:0 auto;max-height:88vh;overflow:auto}
+.sheet h2{font:600 1.1rem var(--font-display);margin:0 0 4px}
+.sheet .sub{color:var(--muted);font-size:.88rem;margin:0 0 14px}
+.opts{display:grid;gap:8px;margin:0 0 14px}
+.opt{display:flex;gap:12px;align-items:center;min-height:46px;border:1.5px solid var(--line);border-radius:12px;padding:6px 12px;background:var(--bg)}
+.opt input{width:22px;height:22px;accent-color:var(--accent)}
+.acts{display:grid;gap:10px}
+.act{display:flex;gap:12px;align-items:center;text-align:left;min-height:56px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);padding:8px 14px;font-weight:600}
+.act small{display:block;font-weight:400;color:var(--muted)}
+.act b{flex:none;width:44px;height:44px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:600 .8rem var(--font-display)}
+.preview{width:100%;min-height:150px;margin-top:12px;font-size:.85rem;font-family:ui-monospace,monospace}
+.close{margin-top:12px;width:100%;min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:transparent;font-weight:600}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:20;font-size:.92rem;max-width:90%}
+.loading{padding:40px 0;text-align:center;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media(max-width:420px){.itxt{display:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="row" id="topRow"></div></header>
+<main class="wrap" id="app"><div class="loading">กำลังเชื่อมต่อฐานข้อมูล…</div></main>
+<div id="barHost"></div>
+<dialog id="dlg"></dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+"use strict";
+/* ---------- ตั้งค่า ---------- */
+const SB_URL = "https://nxssjboaqgqhqhsfzrto.supabase.co";
+const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54c3NqYm9hcWdxaHFoc2Z6cnRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwOTEwMDAsImV4cCI6MjExMDY2NzAwMH0.kX3MYn9ssESgSh424XRwcL0MrSNVUKc1eR8BJtmBFu8";
+const EXPERTS = [
+  {id:1,name:"รองศาสตราจารย์ ดร.พงษ์ศักดิ์ ทองพันชั่ง",short:"รศ.ดร.พงษ์ศักดิ์",pos:"อาจารย์ประจำ มหาวิทยาลัยราชภัฏศรีสะเกษ"},
+  {id:2,name:"อาจารย์ ดร.พิมล วิเศษสังข์",short:"อ.ดร.พิมล",pos:"อาจารย์ประจำ มหาวิทยาลัยราชภัฏศรีสะเกษ"},
+  {id:3,name:"นางสุนิสา ใจใหญ่",short:"ผอ.สุนิสา",pos:"ผู้อำนวยการเชี่ยวชาญ โรงเรียนกระดุมทองวิทยา"},
+  {id:4,name:"ดร.ทรงพล นามปัญญา",short:"ดร.ทรงพล",pos:"ผู้อำนวยการชำนาญการพิเศษ โรงเรียนหนองถ่มวิทยา"},
+  {id:5,name:"ดร.ปิยะพันธ์ พิชญ์ประเสริฐ",short:"ดร.ปิยะพันธ์",pos:"ศึกษานิเทศก์เชี่ยวชาญ อบจ.ศรีสะเกษ"}
+];
+const PARTS = [{"part": 1, "title": "ตอนที่ 1 ข้อมูลทั่วไปของผู้ตอบแบบสอบถาม", "groups": [{"name": "ข้อมูลทั่วไป", "items": [{"no": 1, "text": "ตำแหน่ง", "options": ["ผู้บริหารสถานศึกษา", "ครู"]}, {"no": 2, "text": "เพศ", "options": ["ชาย", "หญิง"]}, {"no": 3, "text": "อายุ", "options": ["ต่ำกว่า 30 ปี", "30 – 39 ปี", "40 – 49 ปี", "50 ปีขึ้นไป"]}, {"no": 4, "text": "ระดับการศึกษา", "options": ["ปริญญาตรี", "ปริญญาโท", "ปริญญาเอก"]}, {"no": 5, "text": "ประสบการณ์ในการทำงาน", "options": ["ต่ำกว่า 10 ปี", "10 – 20 ปี", "มากกว่า 20 ปี"]}, {"no": 6, "text": "ขนาดของสถานศึกษา", "options": ["เล็ก", "กลาง", "ใหญ่", "ใหญ่พิเศษ"]}]}]}, {"part": 2, "title": "ตอนที่ 2 ความฉลาดทางอารมณ์ของผู้บริหาร", "groups": [{"name": "ด้านการตระหนักรู้อารมณ์ตนเอง", "items": [{"no": 1, "text": "ผู้บริหารรับรู้อารมณ์และความรู้สึกของตนเองตามความเป็นจริง และบอกได้ว่าตนเองกำลังรู้สึกอย่างไรและเพราะเหตุใด"}, {"no": 2, "text": "ผู้บริหารรู้เท่าทันสาเหตุของอารมณ์ตนเอง และเข้าใจว่าอารมณ์นั้นส่งผลต่อตนเอง ผู้อื่น และการปฏิบัติงานอย่างไร"}, {"no": 3, "text": "ผู้บริหารประเมินจุดเด่น จุดด้อย และข้อจำกัดของตนเองได้อย่างถูกต้อง และยอมรับตามความเป็นจริง"}, {"no": 4, "text": "ผู้บริหารเปิดใจรับฟังข้อมูลย้อนกลับจากผู้อื่นโดยไม่ปกป้องตนเอง และนำไปใช้พัฒนาตนเอง"}, {"no": 5, "text": "ผู้บริหารเชื่อมั่นในความสามารถของตนเอง กล้าแสดงความคิดเห็น และกล้าตัดสินใจในการบริหารงาน"}]}, {"name": "ด้านการเห็นอกเห็นใจผู้อื่น", "items": [{"no": 6, "text": "ผู้บริหารรับรู้อารมณ์และความรู้สึกของผู้ร่วมงานจากคำพูด น้ำเสียง สีหน้า และท่าทาง"}, {"no": 7, "text": "ผู้บริหารรับฟังผู้ร่วมงานอย่างตั้งใจ และเข้าใจมุมมองของผู้ร่วมงานอย่างถูกต้อง"}, {"no": 8, "text": "ผู้บริหารใส่ใจและห่วงใยความทุกข์สุขของผู้ร่วมงาน"}, {"no": 9, "text": "ผู้บริหารยอมรับและเคารพความแตกต่างระหว่างบุคคลทั้งด้านความคิด ความสามารถ และวิธีการทำงาน"}, {"no": 10, "text": "ผู้บริหารตอบสนองและช่วยเหลือผู้ร่วมงานได้สอดคล้องกับความรู้สึกและความต้องการของผู้ร่วมงานแต่ละคน"}]}, {"name": "ด้านการมีทักษะทางสังคม", "items": [{"no": 11, "text": "ผู้บริหารสร้างและรักษาสัมพันธภาพอันดีกับผู้ร่วมงานและผู้เกี่ยวข้องอย่างต่อเนื่อง"}, {"no": 12, "text": "ผู้บริหารสื่อสารและรับฟังอย่างเปิดเผยเพื่อให้ทุกฝ่ายเข้าใจตรงกัน"}, {"no": 13, "text": "ผู้บริหารโน้มน้าวจูงใจให้ผู้อื่นร่วมมือปฏิบัติงานด้วยความเต็มใจ โดยไม่ใช้การสั่งการเพียงฝ่ายเดียว"}, {"no": 14, "text": "ผู้บริหารประสานความร่วมมือระหว่างบุคคลและหน่วยงานที่เกี่ยวข้อง และส่งเสริมให้ครูทำงานเป็นทีม"}, {"no": 15, "text": "ผู้บริหารจัดการความขัดแย้งอย่างสร้างสรรค์ โดยรับฟังทุกฝ่ายและหาทางออกที่ยอมรับร่วมกัน"}]}, {"name": "ด้านการควบคุมอารมณ์ตนเอง", "items": [{"no": 16, "text": "ผู้บริหารควบคุมอารมณ์และแรงกระตุ้นภายในของตนเองไม่ให้แสดงออกโดยขาดการยั้งคิด"}, {"no": 17, "text": "ผู้บริหารมีสติและสงบนิ่งเมื่อเผชิญภาวะกดดัน"}, {"no": 18, "text": "ผู้บริหารแสดงออกทางอารมณ์ได้เหมาะสมกับบุคคล เวลา สถานที่ และสถานการณ์"}, {"no": 19, "text": "ผู้บริหารปฏิบัติงานด้วยความซื่อสัตย์ โปร่งใส และคงเส้นคงวา โดยปฏิบัติต่อบุคลากรอย่างสม่ำเสมอเท่าเทียมกัน"}, {"no": 20, "text": "ผู้บริหารปรับตัวอย่างยืดหยุ่นต่อการเปลี่ยนแปลง โดยไม่สูญเสียจุดยืนของตน"}]}, {"name": "ด้านการจูงใจตนเอง", "items": [{"no": 21, "text": "ผู้บริหารมุ่งมั่นทุ่มเทเพื่อให้บรรลุเป้าหมายที่กำหนดไว้"}, {"no": 22, "text": "ผู้บริหารริเริ่มและลงมือปฏิบัติเชิงรุก โดยไม่รอให้ปัญหาเกิดขึ้นก่อน"}, {"no": 23, "text": "ผู้บริหารมองโลกในแง่ดีและมองอุปสรรคเป็นโอกาสในการพัฒนางาน"}, {"no": 24, "text": "ผู้บริหารอดทนและไม่ย่อท้อต่ออุปสรรค โดยให้กำลังใจตนเองให้ก้าวต่อไปได้"}, {"no": 25, "text": "ผู้บริหารใฝ่เรียนรู้และพัฒนาตนเองอย่างต่อเนื่อง"}]}]}, {"part": 3, "title": "ตอนที่ 3 การทำงานเป็นทีมของครู", "groups": [{"name": "ด้านการมีเป้าหมายร่วมกัน", "items": [{"no": 1, "text": "ครูร่วมกันกำหนดเป้าหมายและวัตถุประสงค์ของงานไว้อย่างชัดเจนและวัดผลได้"}, {"no": 2, "text": "ครูทุกคนมีส่วนร่วมในการกำหนดเป้าหมายและแผนการดำเนินงาน"}, {"no": 3, "text": "ครูสื่อสารให้สมาชิกทุกคนเข้าใจเป้าหมายของงานตรงกัน"}, {"no": 4, "text": "เป้าหมายของงานสอดคล้องกับเป้าหมายของครูแต่ละคนและของสถานศึกษา"}, {"no": 5, "text": "ครูมุ่งมั่นปฏิบัติงานให้บรรลุเป้าหมายและร่วมกันติดตามทบทวนความก้าวหน้าอย่างสม่ำเสมอ"}]}, {"name": "ด้านการติดต่อสื่อสาร", "items": [{"no": 6, "text": "ครูถ่ายทอดข้อมูลข่าวสารให้เพื่อนร่วมงานทราบอย่างถูกต้อง ชัดเจน และทันเวลา"}, {"no": 7, "text": "ครูสื่อสารอย่างเปิดเผยตรงไปตรงมา และกล้าแสดงความคิดเห็นอย่างสร้างสรรค์โดยไม่กระทบความสัมพันธ์ระหว่างเพื่อนร่วมงาน"}, {"no": 8, "text": "ครูรับฟังความคิดเห็นของกันและกันอย่างตั้งใจ"}, {"no": 9, "text": "ครูสื่อสารสองทางอย่างทั่วถึง ทั้งระหว่างครูกับผู้บริหาร (แนวดิ่ง) และระหว่างครูด้วยกัน (แนวราบ)"}, {"no": 10, "text": "ครูแลกเปลี่ยนข้อมูลอย่างสม่ำเสมอ ทั้งผ่านช่องทางที่เป็นทางการและไม่เป็นทางการ"}]}, {"name": "ด้านการไว้วางใจกัน", "items": [{"no": 11, "text": "ครูเชื่อมั่นในความรู้ความสามารถและความรับผิดชอบของเพื่อนร่วมทีม โดยไม่ต้องตรวจสอบซ้ำทุกขั้นตอน"}, {"no": 12, "text": "ครูยอมรับนับถือและเห็นคุณค่าของสมาชิกแต่ละคน"}, {"no": 13, "text": "ครูมอบหมายงานและกระจายอำนาจการตัดสินใจให้แก่กัน"}, {"no": 14, "text": "ครูช่วยเหลือเกื้อกูลกันเมื่อเกิดปัญหา โดยไม่ซ้ำเติมหรือกล่าวโทษกัน"}, {"no": 15, "text": "ครูมีความซื่อสัตย์ จริงใจ รักษาคำพูดและข้อตกลงร่วมกัน"}]}, {"name": "ด้านการมีมนุษยสัมพันธ์", "items": [{"no": 16, "text": "ครูมีอัธยาศัยไมตรี เป็นมิตร และวางตนเหมาะสมต่อเพื่อนร่วมงาน"}, {"no": 17, "text": "ครูเข้าร่วมกิจกรรมของทีมอย่างสม่ำเสมอทั้งในและนอกเวลาปฏิบัติงาน"}, {"no": 18, "text": "ครูร่วมกันสร้างบรรยากาศการทำงานที่อบอุ่น ผ่อนคลาย และเปิดกว้าง"}, {"no": 19, "text": "ครูยอมรับความแตกต่างระหว่างบุคคลและปรับตัวเข้ากับผู้อื่นได้ดี"}, {"no": 20, "text": "ครูมีความสามัคคีและเป็นอันหนึ่งอันเดียวกัน"}]}, {"name": "ด้านการกำหนดบทบาทหน้าที่", "items": [{"no": 21, "text": "ทีมกำหนดบทบาทหน้าที่และขอบเขตความรับผิดชอบของครูแต่ละคนไว้อย่างชัดเจน"}, {"no": 22, "text": "ครูได้รับมอบหมายงานสอดคล้องกับความรู้ ความสามารถ ทักษะ และความถนัดของแต่ละคน"}, {"no": 23, "text": "ภาระงานกระจายแก่ครูอย่างทั่วถึงและเป็นธรรม"}, {"no": 24, "text": "ครูเข้าใจและปฏิบัติตามบทบาทของตนทั้งด้านงานและด้านการสนับสนุนความสัมพันธ์ภายในทีม"}, {"no": 25, "text": "ครูเกื้อหนุนและปฏิบัติงานทดแทนกันได้เมื่อจำเป็น โดยมีอิสระในการปฏิบัติงานพอสมควร"}]}]}];
+const PART_SHORT = {1:"ข้อมูลทั่วไป",2:"ความฉลาดทางอารมณ์",3:"ทำงานเป็นทีม"};
+
+/* ---------- ข้อมูลข้อคำถาม ---------- */
+const SEQ = [];
+PARTS.forEach(p=>p.groups.forEach((g,gi)=>g.items.forEach((it,ii)=>{
+  SEQ.push({part:p.part,no:it.no,group:g.name,text:it.text,options:it.options||null,
+    sub:(p.part===1?null:(gi+1)+"."+(ii+1))});
+})));
+const keyOf=(e,p,n)=>e+"-"+p+"-"+n;
+const itemOf=(p,n)=>SEQ.find(s=>s.part===p&&s.no===n);
+const idxOf=(p,n)=>SEQ.findIndex(s=>s.part===p&&s.no===n);
+const labelOf=s=>"ข้อ "+s.no+(s.sub?" ("+s.sub+")":"");
+const fullText=s=>s.options?s.text+" ("+s.options.join(" / ")+")":s.text;
+
+/* ---------- ฐานข้อมูล ---------- */
+const db = supabase.createClient(SB_URL,SB_KEY,{realtime:{params:{eventsPerSecond:5}}});
+const cache = {};          // key -> {comment, updated_at}
+const pending = {};        // key -> {timer, value}
+let live = "wait";         // wait | on | off
+
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2400)}
+
+async function loadAll(){
+  const {data,error}=await db.from("ioc_comments").select("expert_id,part,item_no,comment,updated_at");
+  if(error) throw error;
+  data.forEach(r=>{cache[keyOf(r.expert_id,r.part,r.item_no)]={comment:r.comment,updated_at:r.updated_at}});
+}
+function subscribe(){
+  db.channel("ioc-live").on("postgres_changes",{event:"*",schema:"public",table:"ioc_comments"},payload=>{
+    const r=payload.new; if(!r||!r.expert_id) return;
+    const k=keyOf(r.expert_id,r.part,r.item_no);
+    if(pending[k]) return; // กำลังพิมพ์อยู่ในเครื่องนี้
+    cache[k]={comment:r.comment,updated_at:r.updated_at};
+    const ta=$("#cm");
+    if(ta && ta.dataset.key===k){ if(document.activeElement!==ta) ta.value=r.comment; }
+    else if(!ta) softRender();
+  }).subscribe(st=>{
+    live = st==="SUBSCRIBED"?"on":(st==="CHANNEL_ERROR"||st==="TIMED_OUT"||st==="CLOSED")?"off":"wait";
+    paintLive();
+  });
+}
+async function saveNow(k){
+  const p=pending[k]; if(!p) return;
+  clearTimeout(p.timer); const value=p.value; delete pending[k];
+  const [e,pt,n]=k.split("-").map(Number);
+  setStatus(k,"saving");
+  const {error}=await db.from("ioc_comments").upsert({expert_id:e,part:pt,item_no:n,comment:value},{onConflict:"expert_id,part,item_no"});
+  if(error){ pending[k]={timer:null,value}; setStatus(k,"err"); return; }
+  cache[k]={comment:value,updated_at:new Date().toISOString()};
+  setStatus(k,"ok");
+}
+function queueSave(k,value){
+  if(pending[k]) clearTimeout(pending[k].timer);
+  pending[k]={value,timer:setTimeout(()=>saveNow(k),700)};
+  cache[k]={comment:value,updated_at:new Date().toISOString()};
+  setStatus(k,"typing");
+}
+async function flushAll(){await Promise.all(Object.keys(pending).map(k=>saveNow(k)))}
+function setStatus(k,st){
+  const el=$("#st"); if(!el||el.dataset.key!==k) return;
+  const m={typing:["","กำลังพิมพ์…"],saving:["","กำลังบันทึก…"],ok:["ok","✓ บันทึกแล้ว"],err:["err","บันทึกไม่สำเร็จ"]}[st];
+  el.className="status "+m[0]; el.innerHTML=esc(m[1]);
+  if(st==="err"){const b=document.createElement("button");b.textContent="ลองอีกครั้ง";b.onclick=()=>saveNow(k);el.appendChild(b)}
+}
+
+/* ---------- หน้าจอ ---------- */
+function route(){
+  const h=decodeURIComponent(location.hash.replace(/^#/,""));
+  const m=h.match(/^e([1-5])(?:\/([1-3])\/(\d+))?$/);
+  if(!m) return {v:"home"};
+  if(m[2]) return {v:"item",e:+m[1],p:+m[2],n:+m[3]};
+  return {v:"expert",e:+m[1],p:+(sessionStorageGet("part"+m[1])||2)};
+}
+function sessionStorageGet(k){try{return sessionStorage.getItem(k)}catch(_){return null}}
+function sessionStorageSet(k,v){try{sessionStorage.setItem(k,v)}catch(_){}}
+function countFor(e,p){return SEQ.filter(s=>(!p||s.part===p)&&(cache[keyOf(e,s.part,s.no)]||{}).comment?.trim()).length}
+function paintLive(){const el=$("#live"); if(!el) return; el.className="live "+live; el.lastChild.textContent=live==="on"?"เรียลไทม์":live==="off"?"ออฟไลน์":"กำลังเชื่อม…"}
+function topRow(html){$("#topRow").innerHTML=html; paintLive()}
+const liveHtml='<span class="live" id="live"><i></i><span>…</span></span>';
+function exportBtn(e){return installBtn()+'<button class="iconbtn primary" data-export="'+(e||"")+'" aria-label="ส่งออกข้อมูล">ส่งออก</button>'}
+
+
+/* ===== PWA ===== */
+const APP={name:"บันทึกข้อเสนอแนะผู้เชี่ยวชาญ IOC",short:"IOC ข้อเสนอแนะ",desc:"บันทึกข้อเสนอแนะของผู้เชี่ยวชาญ 5 ท่านแบบเรียลไทม์",theme:"#0f766e",bg:"#f1f4f8",fallbackText:"IOC"};
+function drawAppIcon(size,pad){const c=document.createElement("canvas");c.width=c.height=size;const x=c.getContext("2d");x.fillStyle=APP.theme;x.fillRect(0,0,size,size);x.fillStyle="#fff";x.font="700 "+Math.round(size*(.4-pad*.3))+"px sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(APP.fallbackText,size/2,size/2+size*.02);return c.toDataURL("image/png")}
+function setHeadLink(rel,href,attrs){let l=document.querySelector('link[rel="'+rel+'"]');if(!l){l=document.createElement("link");l.rel=rel;document.head.appendChild(l)}l.href=href;Object.keys(attrs||{}).forEach(k=>l.setAttribute(k,attrs[k]));return l}
+function setupPwaIcons(){try{
+  const a=drawAppIcon(192,.1),b=drawAppIcon(512,.1),m=drawAppIcon(512,.22),ap=drawAppIcon(180,.1);
+  const base=location.origin+location.pathname;
+  const manifest={id:base,name:APP.name,short_name:APP.short,description:APP.desc,start_url:base,scope:base,display:"standalone",orientation:"portrait",background_color:APP.bg,theme_color:APP.theme,lang:"th",icons:[{src:a,sizes:"192x192",type:"image/png",purpose:"any"},{src:b,sizes:"512x512",type:"image/png",purpose:"any"},{src:m,sizes:"512x512",type:"image/png",purpose:"maskable"}]};
+  setHeadLink("manifest",URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"})));
+  setHeadLink("apple-touch-icon",ap,{sizes:"180x180"});
+}catch(_){}}
+function isStandalone(){try{return (matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true}catch(_){return false}}
+let installed=isStandalone();
+window.addEventListener("appinstalled",()=>{installed=true;if(lastRoute)softRender()});
+function installBtn(){return installed?"":'<button class="iconbtn" data-install="1" aria-label="ติดตั้งแอป">⤓<span class="itxt"> ติดตั้ง</span></button>'}
+async function doInstall(){
+  if(window.__bip){const p=window.__bip;window.__bip=null;p.prompt();try{await p.userChoice}catch(_){}return}
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const and=/android/i.test(navigator.userAgent);
+  const box=(on,t,s)=>'<div style="padding:12px 14px;border:1px solid '+(on?"var(--accent)":"var(--line,#d6dde6)")+';border-radius:12px;margin:8px 0;'+(on?"background:var(--accent-soft)":"")+'"><b>'+t+'</b><div style="margin-top:4px;font-size:.95em;line-height:1.5">'+s+'</div></div>';
+  let d=document.getElementById("instDlg"); if(!d){d=document.createElement("dialog");d.id="instDlg";d.style.cssText="border:0;border-radius:18px;padding:18px;max-width:420px;width:calc(100% - 32px);background:var(--card,#fff);color:inherit";document.body.appendChild(d)}
+  d.innerHTML='<h3 style="margin:0 0 4px;font-size:1.15em">ติดตั้งเป็นแอปในเครื่อง</h3><p style="margin:0 0 6px;opacity:.75;font-size:.92em">ทำครั้งเดียว แล้วเปิดจากไอคอนหน้าจอโฮมได้เลย</p>'+
+   box(ios,"iPhone / iPad (Safari)","แตะปุ่มแชร์ → เลื่อนลงเลือก “เพิ่มไปยังหน้าจอโฮม” → แตะ “เพิ่ม”")+
+   box(and,"Android (Chrome)","เมนู ⋮ → “ติดตั้งแอป” หรือ “เพิ่มลงในหน้าจอหลัก”")+
+   box(!ios&&!and,"คอมพิวเตอร์ (Chrome / Edge)","กดไอคอนติดตั้งท้ายช่องที่อยู่เว็บ")+
+   '<button class="iconbtn primary" style="width:100%;margin-top:10px;min-height:46px" onclick="this.closest(\'dialog\').close()">ปิด</button>';
+  d.showModal();
+}
+setupPwaIcons();
+
+let lastRoute=null;
+function softRender(){const y=scrollY; render(true); scrollTo(0,y)}
+async function render(soft){
+  const r=route(); lastRoute=r;
+  if(!soft) await flushAll();
+  $("#barHost").innerHTML="";
+  if(r.v==="home") return viewHome();
+  if(r.v==="expert") return viewExpert(r);
+  return viewItem(r);
+}
+function viewHome(){
+  const total=EXPERTS.reduce((a,x)=>a+countFor(x.id),0);
+  topRow('<h1>ข้อเสนอแนะผู้เชี่ยวชาญ<small>แบบประเมิน IOC · '+SEQ.length+' ข้อ</small></h1>'+liveHtml+exportBtn(""));
+  $("#app").innerHTML='<p class="intro">เลือกผู้เชี่ยวชาญที่ต้องการบันทึกข้อเสนอแนะ ข้อความจะบันทึกอัตโนมัติและเห็นพร้อมกันทุกเครื่อง · ตอนนี้มีทั้งหมด <b>'+total+'</b> ข้อ</p><div class="cards">'+
+  EXPERTS.map(x=>'<button class="card" data-go="e'+x.id+'"><span class="num">'+x.id+'</span><span class="who"><b>'+esc(x.name)+'</b><span class="pos">'+esc(x.pos)+'</span></span><span class="badge">'+countFor(x.id)+'<small>ข้อที่มีคอมเมนต์</small></span></button>').join("")+'</div>';
+}
+function viewExpert(r){
+  const x=EXPERTS[r.e-1], part=PARTS.find(p=>p.part===r.p);
+  topRow('<button class="iconbtn" data-go="" aria-label="กลับ">‹ กลับ</button><h1>'+esc(x.short)+'<small>คนที่ '+x.id+' · '+esc(x.pos)+'</small></h1>'+liveHtml+exportBtn(x.id));
+  const tabs='<div class="tabs" role="tablist">'+PARTS.map(p=>'<button role="tab" aria-selected="'+(p.part===r.p)+'" data-part="'+p.part+'">ตอน '+p.part+'<small>'+countFor(x.id,p.part)+'/'+p.groups.reduce((a,g)=>a+g.items.length,0)+' ข้อ</small></button>').join("")+'</div>';
+  const groups=part.groups.map(g=>'<section class="group"><h3>'+(r.p===1?"ข้อมูลทั่วไปของผู้ตอบ":esc(g.name))+'</h3><div class="chips">'+
+    g.items.map(it=>{const has=(cache[keyOf(x.id,r.p,it.no)]||{}).comment?.trim();const s=itemOf(r.p,it.no);
+      return '<button class="chip'+(has?" has":"")+'" data-go="e'+x.id+'/'+r.p+'/'+it.no+'" aria-label="'+esc(labelOf(s))+(has?" มีคอมเมนต์":"")+'">'+it.no+(s.sub?'<small>'+s.sub+'</small>':'')+'</button>'}).join("")+'</div></section>').join("");
+  $("#app").innerHTML=tabs+'<p class="ptitle">'+esc(part.title)+'</p><div class="legend"><span><i class="has"></i>มีข้อเสนอแนะ</span><span><i></i>ยังไม่มี</span></div>'+groups;
+}
+function viewItem(r){
+  const x=EXPERTS[r.e-1], s=itemOf(r.p,r.n), i=idxOf(r.p,r.n), k=keyOf(r.e,r.p,r.n);
+  if(!s){location.hash="e"+r.e;return}
+  topRow('<button class="iconbtn" data-go="e'+r.e+'" aria-label="กลับไปรายการข้อ">‹ รายการ</button><h1>'+esc(x.short)+'<small>ตอน '+r.p+' · '+esc(labelOf(s))+'</small></h1>'+liveHtml);
+  const val=(cache[k]||{}).comment||"";
+  $("#app").innerHTML='<div class="q"><div class="meta">ตอนที่ '+r.p+' '+esc(PART_SHORT[r.p])+(r.p>1?' · '+esc(s.group):'')+'</div><p><b>'+esc(labelOf(s))+'</b> '+esc(s.text)+'</p>'+(s.options?'<ul>'+s.options.map(o=>'<li>'+esc(o)+'</li>').join("")+'</ul>':'')+'</div>'+
+   '<label class="lbl" for="cm">ข้อเสนอแนะของ'+esc(x.short)+'</label><textarea id="cm" data-key="'+k+'" placeholder="พิมพ์ข้อแก้ไข / คอมเมนต์ของผู้เชี่ยวชาญ" enterkeyhint="done"></textarea><div class="status" id="st" data-key="'+k+'" aria-live="polite">พิมพ์แล้วบันทึกอัตโนมัติ</div><div class="pad-bar"></div>';
+  const ta=$("#cm"); ta.value=val;
+  ta.addEventListener("input",()=>queueSave(k,ta.value));
+  ta.addEventListener("blur",()=>saveNow(k));
+  const prev=SEQ[i-1], next=SEQ[i+1];
+  $("#barHost").innerHTML='<div class="bar"><div class="in"><button data-go="'+(prev?'e'+r.e+'/'+prev.part+'/'+prev.no:'')+'" '+(prev?'':'disabled')+'>‹ ก่อนหน้า</button><span class="pos">'+(i+1)+' / '+SEQ.length+'</span><button class="next" data-go="'+(next?'e'+r.e+'/'+next.part+'/'+next.no:'')+'" '+(next?'':'disabled')+'>ถัดไป ›</button></div></div>';
+  window.scrollTo(0,0);
+}
+
+/* ---------- ส่งออก ---------- */
+function collect(expertIds,withEmpty){
+  const rows=[];
+  expertIds.forEach(e=>{const x=EXPERTS[e-1];
+    SEQ.forEach(s=>{const c=cache[keyOf(e,s.part,s.no)]; const t=(c&&c.comment||"").trim();
+      if(!t&&!withEmpty) return;
+      rows.push({e,expert:x.name,part:s.part,partName:PART_SHORT[s.part],no:s.no,sub:s.sub||"",group:s.part===1?"":s.group,q:fullText(s),comment:t,updated:c&&c.updated_at?new Date(c.updated_at).toLocaleString("th-TH"):""});
+    })});
+  return rows;
+}
+function buildText(rows,ids){
+  let out="ข้อเสนอแนะของผู้เชี่ยวชาญ (IOC)\n\n";
+  ids.forEach(e=>{const x=EXPERTS[e-1]; const rs=rows.filter(r=>r.e===e);
+    out+="ผู้เชี่ยวชาญคนที่ "+x.id+": "+x.name+"\n"+"-".repeat(40)+"\n";
+    if(!rs.length) out+="(ไม่มีข้อเสนอแนะ)\n";
+    rs.forEach(r=>{out+="ตอนที่ "+r.part+" ข้อ "+r.no+(r.sub?" ("+r.sub+")":"")+"\nข้อคำถาม: "+r.q+"\nข้อเสนอแนะ: "+(r.comment||"-")+"\n\n"});
+    out+="\n";});
+  return out.trim()+"\n";
+}
+function download(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+const stamp=()=>new Date().toISOString().slice(0,10);
+const X=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const FONT='<w:rFonts w:ascii="TH SarabunPSK" w:hAnsi="TH SarabunPSK" w:cs="TH SarabunPSK" w:eastAsia="TH SarabunPSK"/>';
+function run(t,{b=false,sz=28}={}){
+  const parts=String(t).split("\n").map(x=>'<w:t xml:space="preserve">'+X(x)+'</w:t>').join("<w:br/>");
+  return '<w:r><w:rPr>'+FONT+(b?'<w:b/><w:bCs/>':'')+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/></w:rPr>'+parts+'</w:r>';
+}
+const para=(t,o={})=>'<w:p><w:pPr><w:spacing w:before="'+(o.before||0)+'" w:after="'+(o.after||80)+'"/>'+(o.center?'<w:jc w:val="center"/>':'')+'</w:pPr>'+run(t,o)+'</w:p>';
+const cell=(t,w,o={})=>'<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+(o.shade?'<w:shd w:val="clear" w:color="auto" w:fill="E7EEF2"/>':'')+'</w:tcPr>'+(String(t).split("\n\n").map(x=>para(x,{b:o.b,after:20})).join(""))+'</w:tc>';
+async function buildDocx(rows,ids){
+  const W=[900,1400,6000,6700];
+  let body=para("ข้อเสนอแนะของผู้เชี่ยวชาญ (IOC)",{b:true,sz:36,center:true,after:60})+
+    para("เรื่อง ความสัมพันธ์ระหว่างความฉลาดทางอารมณ์ของผู้บริหารกับการทำงานเป็นทีมของครู ในโรงเรียนสังกัดองค์การบริหารส่วนจังหวัดศรีสะเกษ",{center:true,after:200});
+  ids.forEach(e=>{const x=EXPERTS[e-1], rs=rows.filter(r=>r.e===e);
+    body+=para("ผู้เชี่ยวชาญคนที่ "+x.id+" "+x.name,{b:true,sz:32,before:200,after:60})+para(x.pos,{after:100});
+    if(!rs.length){body+=para("(ไม่มีข้อเสนอแนะ)");return}
+    const border=['top','left','bottom','right','insideH','insideV'].map(s=>'<w:'+s+' w:val="single" w:sz="4" w:space="0" w:color="808080"/>').join("");
+    let t='<w:tbl><w:tblPr><w:tblW w:w="'+W.reduce((a,b)=>a+b)+'" w:type="dxa"/><w:tblBorders>'+border+'</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>'+W.map(w=>'<w:gridCol w:w="'+w+'"/>').join("")+'</w:tblGrid>';
+    t+='<w:tr><w:trPr><w:tblHeader/></w:trPr>'+cell("ตอนที่",W[0],{b:1,shade:1})+cell("ข้อ",W[1],{b:1,shade:1})+cell("ข้อคำถาม",W[2],{b:1,shade:1})+cell("ข้อเสนอแนะ",W[3],{b:1,shade:1})+'</w:tr>';
+    rs.forEach(r=>{t+='<w:tr><w:trPr><w:cantSplit/></w:trPr>'+cell(String(r.part),W[0])+cell(r.no+(r.sub?" ("+r.sub+")":""),W[1])+cell(r.q,W[2])+cell(r.comment||"-",W[3])+'</w:tr>'});
+    body+=t+'</w:tbl>'+para("",{after:40});
+  });
+  const doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+body+'<w:sectPr><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="1000" w:right="900" w:bottom="1000" w:left="900" w:header="500" w:footer="500" w:gutter="0"/></w:sectPr></w:body></w:document>';
+  const z=new JSZip();
+  z.file("[Content_Types].xml",'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+  z.file("_rels/.rels",'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
+  z.file("word/document.xml",doc);
+  return z.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+}
+function buildXlsx(rows,ids){
+  const head=r=>({"คนที่":r.e,"ผู้เชี่ยวชาญ":r.expert,"ตอนที่":r.part,"ข้อ":r.no,"ข้อในแบบประเมิน":r.sub,"ด้าน":r.group,"ข้อคำถาม":r.q,"ข้อเสนอแนะ":r.comment,"แก้ไขล่าสุด":r.updated});
+  const wb=XLSX.utils.book_new();
+  const mk=rs=>{const ws=XLSX.utils.json_to_sheet(rs.length?rs.map(head):[head({e:"",expert:"",part:"",no:"",sub:"",group:"",q:"",comment:"",updated:""})]);
+    ws["!cols"]=[{wch:7},{wch:34},{wch:8},{wch:6},{wch:14},{wch:28},{wch:60},{wch:60},{wch:20}];return ws};
+  XLSX.utils.book_append_sheet(wb,mk(rows),"ทั้งหมด");
+  ids.forEach(e=>XLSX.utils.book_append_sheet(wb,mk(rows.filter(r=>r.e===e)),"คนที่ "+e));
+  const out=XLSX.write(wb,{bookType:"xlsx",type:"array"});
+  return new Blob([out],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+}
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);return true}catch(_){}
+  const ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();
+  let ok=false;try{ok=document.execCommand("copy")}catch(_){} ta.remove();return ok;
+}
+async function openExport(pre){
+  await flushAll();
+  const dlg=$("#dlg");
+  dlg.innerHTML='<div class="sheet"><h2>ส่งออกข้อมูล</h2><p class="sub">เลือกผู้เชี่ยวชาญที่ต้องการ แล้วเลือกรูปแบบไฟล์</p><div class="opts">'+
+    EXPERTS.map(x=>'<label class="opt"><input type="checkbox" name="ex" value="'+x.id+'" '+((!pre||pre==x.id)?"checked":"")+'><span>คนที่ '+x.id+' · '+esc(x.short)+' <small style="color:var(--muted)">('+countFor(x.id)+' ข้อ)</small></span></label>').join("")+
+    '<label class="opt"><input type="checkbox" id="withEmpty"><span>รวมข้อที่ยังไม่มีข้อเสนอแนะด้วย</span></label></div>'+
+    '<div class="acts"><button class="act" data-fmt="docx"><b>.docx</b><span>ไฟล์ Word (ตาราง)<small>เปิดแก้ไขต่อใน Word</small></span></button>'+
+    '<button class="act" data-fmt="xlsx"><b>.xlsx</b><span>ไฟล์ Excel<small>ทั้งหมด + แยกชีตรายคน</small></span></button>'+
+    '<button class="act" data-fmt="copy"><b>ข้อความ</b><span>คัดลอกเป็นข้อความ<small>วางในไลน์ / เอกสารได้ทันที</small></span></button></div>'+
+    '<textarea class="preview" id="pv" readonly hidden></textarea><button class="close" id="closeDlg">ปิด</button></div>';
+  if(!dlg.open) dlg.showModal();
+  dlg.onclick=async ev=>{
+    if(ev.target===dlg){dlg.close();return}
+    if(ev.target.id==="closeDlg"){dlg.close();return}
+    const b=ev.target.closest("[data-fmt]"); if(!b) return;
+    const ids=[...dlg.querySelectorAll('input[name=ex]:checked')].map(i=>+i.value);
+    if(!ids.length){toast("เลือกผู้เชี่ยวชาญอย่างน้อย 1 คน");return}
+    const rows=collect(ids,$("#withEmpty").checked);
+    if(!rows.length && !$("#withEmpty").checked){toast("ยังไม่มีข้อเสนอแนะของผู้เชี่ยวชาญที่เลือก");return}
+    try{
+      if(b.dataset.fmt==="docx"){download(await buildDocx(rows,ids),"ข้อเสนอแนะผู้เชี่ยวชาญ_IOC_"+stamp()+".docx");toast("ดาวน์โหลด .docx แล้ว")}
+      else if(b.dataset.fmt==="xlsx"){download(buildXlsx(rows,ids),"ข้อเสนอแนะผู้เชี่ยวชาญ_IOC_"+stamp()+".xlsx");toast("ดาวน์โหลด .xlsx แล้ว")}
+      else{const t=buildText(rows,ids);const pv=$("#pv");pv.hidden=false;pv.value=t;toast(await copyText(t)?"คัดลอกข้อความแล้ว":"คัดลอกไม่ได้ กดค้างที่กล่องข้อความเพื่อคัดลอก")}
+    }catch(err){console.error(err);toast("ส่งออกไม่สำเร็จ: "+err.message)}
+  };
+}
+
+/* ---------- เหตุการณ์ ---------- */
+document.addEventListener("click",ev=>{
+  const g=ev.target.closest("[data-go]"); if(g&&!g.disabled){const v=g.dataset.go;
+    if(v===""){history.length>1&&/^e/.test(location.hash.slice(1))?(location.hash=""):(location.hash="")}else location.hash=v; return}
+  const pt=ev.target.closest("[data-part]"); if(pt){const r=route();sessionStorageSet("part"+r.e,pt.dataset.part);render(true);return}
+  if(ev.target.closest("[data-install]")){doInstall();return} const ex=ev.target.closest("[data-export]"); if(ex){openExport(ex.dataset.export)}
+});
+window.addEventListener("hashchange",()=>render());
+window.addEventListener("pagehide",flushAll);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)flushAll()});
+
+(async function init(){
+  try{await loadAll()}catch(err){
+    console.error(err); live="off";
+    $("#app").innerHTML='<div class="q"><p><b>เชื่อมต่อฐานข้อมูลไม่ได้</b></p><p>'+esc(err.message||err)+'</p><p>ตรวจสอบอินเทอร์เน็ต แล้วโหลดหน้านี้ใหม่</p></div>';
+    topRow('<h1>ข้อเสนอแนะผู้เชี่ยวชาญ</h1>'+liveHtml); return;
+  }
+  subscribe(); render();
+})();
+</script>
+</body>
+</html>
