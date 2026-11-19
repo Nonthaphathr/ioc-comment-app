@@ -106,6 +106,8 @@ dialog::backdrop{background:rgba(10,18,25,.55)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:20;font-size:.92rem;max-width:90%}
 .loading{padding:40px 0;text-align:center;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+button.gen{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:56px;padding:12px 16px;border:1px dashed var(--accent);background:transparent;color:var(--accent);border-radius:14px;font:inherit;font-weight:600;text-align:left;cursor:pointer}
+button.gen small{font-weight:400;color:var(--muted)} button.gen.has{background:var(--accent-soft);border-style:solid}
 @media(max-width:420px){.itxt{display:none}.top .live span{display:none}.top .logo{width:34px;height:34px}}
 </style>
 </head>
@@ -131,7 +133,7 @@ const EXPERTS = [
   {id:5,name:"ดร.ปิยะพันธ์ พิชญ์ประเสริฐ",short:"ดร.ปิยะพันธ์",pos:"ศึกษานิเทศก์เชี่ยวชาญ อบจ.ศรีสะเกษ"}
 ];
 const PARTS = [{"part": 1, "title": "ตอนที่ 1 ข้อมูลทั่วไปของผู้ตอบแบบสอบถาม", "groups": [{"name": "ข้อมูลทั่วไป", "items": [{"no": 1, "text": "ตำแหน่ง", "options": ["ผู้บริหารสถานศึกษา", "ครู"]}, {"no": 2, "text": "เพศ", "options": ["ชาย", "หญิง"]}, {"no": 3, "text": "อายุ", "options": ["ต่ำกว่า 30 ปี", "30 – 39 ปี", "40 – 49 ปี", "50 ปีขึ้นไป"]}, {"no": 4, "text": "ระดับการศึกษา", "options": ["ปริญญาตรี", "ปริญญาโท", "ปริญญาเอก"]}, {"no": 5, "text": "ประสบการณ์ในการทำงาน", "options": ["ต่ำกว่า 10 ปี", "10 – 20 ปี", "มากกว่า 20 ปี"]}, {"no": 6, "text": "ขนาดของสถานศึกษา", "options": ["เล็ก", "กลาง", "ใหญ่", "ใหญ่พิเศษ"]}]}]}, {"part": 2, "title": "ตอนที่ 2 ความฉลาดทางอารมณ์ของผู้บริหาร", "groups": [{"name": "ด้านการตระหนักรู้อารมณ์ตนเอง", "items": [{"no": 1, "text": "ผู้บริหารรับรู้อารมณ์และความรู้สึกของตนเองตามความเป็นจริง และบอกได้ว่าตนเองกำลังรู้สึกอย่างไรและเพราะเหตุใด"}, {"no": 2, "text": "ผู้บริหารรู้เท่าทันสาเหตุของอารมณ์ตนเอง และเข้าใจว่าอารมณ์นั้นส่งผลต่อตนเอง ผู้อื่น และการปฏิบัติงานอย่างไร"}, {"no": 3, "text": "ผู้บริหารประเมินจุดเด่น จุดด้อย และข้อจำกัดของตนเองได้อย่างถูกต้อง และยอมรับตามความเป็นจริง"}, {"no": 4, "text": "ผู้บริหารเปิดใจรับฟังข้อมูลย้อนกลับจากผู้อื่นโดยไม่ปกป้องตนเอง และนำไปใช้พัฒนาตนเอง"}, {"no": 5, "text": "ผู้บริหารเชื่อมั่นในความสามารถของตนเอง กล้าแสดงความคิดเห็น และกล้าตัดสินใจในการบริหารงาน"}]}, {"name": "ด้านการเห็นอกเห็นใจผู้อื่น", "items": [{"no": 6, "text": "ผู้บริหารรับรู้อารมณ์และความรู้สึกของผู้ร่วมงานจากคำพูด น้ำเสียง สีหน้า และท่าทาง"}, {"no": 7, "text": "ผู้บริหารรับฟังผู้ร่วมงานอย่างตั้งใจ และเข้าใจมุมมองของผู้ร่วมงานอย่างถูกต้อง"}, {"no": 8, "text": "ผู้บริหารใส่ใจและห่วงใยความทุกข์สุขของผู้ร่วมงาน"}, {"no": 9, "text": "ผู้บริหารยอมรับและเคารพความแตกต่างระหว่างบุคคลทั้งด้านความคิด ความสามารถ และวิธีการทำงาน"}, {"no": 10, "text": "ผู้บริหารตอบสนองและช่วยเหลือผู้ร่วมงานได้สอดคล้องกับความรู้สึกและความต้องการของผู้ร่วมงานแต่ละคน"}]}, {"name": "ด้านการมีทักษะทางสังคม", "items": [{"no": 11, "text": "ผู้บริหารสร้างและรักษาสัมพันธภาพอันดีกับผู้ร่วมงานและผู้เกี่ยวข้องอย่างต่อเนื่อง"}, {"no": 12, "text": "ผู้บริหารสื่อสารและรับฟังอย่างเปิดเผยเพื่อให้ทุกฝ่ายเข้าใจตรงกัน"}, {"no": 13, "text": "ผู้บริหารโน้มน้าวจูงใจให้ผู้อื่นร่วมมือปฏิบัติงานด้วยความเต็มใจ โดยไม่ใช้การสั่งการเพียงฝ่ายเดียว"}, {"no": 14, "text": "ผู้บริหารประสานความร่วมมือระหว่างบุคคลและหน่วยงานที่เกี่ยวข้อง และส่งเสริมให้ครูทำงานเป็นทีม"}, {"no": 15, "text": "ผู้บริหารจัดการความขัดแย้งอย่างสร้างสรรค์ โดยรับฟังทุกฝ่ายและหาทางออกที่ยอมรับร่วมกัน"}]}, {"name": "ด้านการควบคุมอารมณ์ตนเอง", "items": [{"no": 16, "text": "ผู้บริหารควบคุมอารมณ์และแรงกระตุ้นภายในของตนเองไม่ให้แสดงออกโดยขาดการยั้งคิด"}, {"no": 17, "text": "ผู้บริหารมีสติและสงบนิ่งเมื่อเผชิญภาวะกดดัน"}, {"no": 18, "text": "ผู้บริหารแสดงออกทางอารมณ์ได้เหมาะสมกับบุคคล เวลา สถานที่ และสถานการณ์"}, {"no": 19, "text": "ผู้บริหารปฏิบัติงานด้วยความซื่อสัตย์ โปร่งใส และคงเส้นคงวา โดยปฏิบัติต่อบุคลากรอย่างสม่ำเสมอเท่าเทียมกัน"}, {"no": 20, "text": "ผู้บริหารปรับตัวอย่างยืดหยุ่นต่อการเปลี่ยนแปลง โดยไม่สูญเสียจุดยืนของตน"}]}, {"name": "ด้านการจูงใจตนเอง", "items": [{"no": 21, "text": "ผู้บริหารมุ่งมั่นทุ่มเทเพื่อให้บรรลุเป้าหมายที่กำหนดไว้"}, {"no": 22, "text": "ผู้บริหารริเริ่มและลงมือปฏิบัติเชิงรุก โดยไม่รอให้ปัญหาเกิดขึ้นก่อน"}, {"no": 23, "text": "ผู้บริหารมองโลกในแง่ดีและมองอุปสรรคเป็นโอกาสในการพัฒนางาน"}, {"no": 24, "text": "ผู้บริหารอดทนและไม่ย่อท้อต่ออุปสรรค โดยให้กำลังใจตนเองให้ก้าวต่อไปได้"}, {"no": 25, "text": "ผู้บริหารใฝ่เรียนรู้และพัฒนาตนเองอย่างต่อเนื่อง"}]}]}, {"part": 3, "title": "ตอนที่ 3 การทำงานเป็นทีมของครู", "groups": [{"name": "ด้านการมีเป้าหมายร่วมกัน", "items": [{"no": 1, "text": "ครูร่วมกันกำหนดเป้าหมายและวัตถุประสงค์ของงานไว้อย่างชัดเจนและวัดผลได้"}, {"no": 2, "text": "ครูทุกคนมีส่วนร่วมในการกำหนดเป้าหมายและแผนการดำเนินงาน"}, {"no": 3, "text": "ครูสื่อสารให้สมาชิกทุกคนเข้าใจเป้าหมายของงานตรงกัน"}, {"no": 4, "text": "เป้าหมายของงานสอดคล้องกับเป้าหมายของครูแต่ละคนและของสถานศึกษา"}, {"no": 5, "text": "ครูมุ่งมั่นปฏิบัติงานให้บรรลุเป้าหมายและร่วมกันติดตามทบทวนความก้าวหน้าอย่างสม่ำเสมอ"}]}, {"name": "ด้านการติดต่อสื่อสาร", "items": [{"no": 6, "text": "ครูถ่ายทอดข้อมูลข่าวสารให้เพื่อนร่วมงานทราบอย่างถูกต้อง ชัดเจน และทันเวลา"}, {"no": 7, "text": "ครูสื่อสารอย่างเปิดเผยตรงไปตรงมา และกล้าแสดงความคิดเห็นอย่างสร้างสรรค์โดยไม่กระทบความสัมพันธ์ระหว่างเพื่อนร่วมงาน"}, {"no": 8, "text": "ครูรับฟังความคิดเห็นของกันและกันอย่างตั้งใจ"}, {"no": 9, "text": "ครูสื่อสารสองทางอย่างทั่วถึง ทั้งระหว่างครูกับผู้บริหาร (แนวดิ่ง) และระหว่างครูด้วยกัน (แนวราบ)"}, {"no": 10, "text": "ครูแลกเปลี่ยนข้อมูลอย่างสม่ำเสมอ ทั้งผ่านช่องทางที่เป็นทางการและไม่เป็นทางการ"}]}, {"name": "ด้านการไว้วางใจกัน", "items": [{"no": 11, "text": "ครูเชื่อมั่นในความรู้ความสามารถและความรับผิดชอบของเพื่อนร่วมทีม โดยไม่ต้องตรวจสอบซ้ำทุกขั้นตอน"}, {"no": 12, "text": "ครูยอมรับนับถือและเห็นคุณค่าของสมาชิกแต่ละคน"}, {"no": 13, "text": "ครูมอบหมายงานและกระจายอำนาจการตัดสินใจให้แก่กัน"}, {"no": 14, "text": "ครูช่วยเหลือเกื้อกูลกันเมื่อเกิดปัญหา โดยไม่ซ้ำเติมหรือกล่าวโทษกัน"}, {"no": 15, "text": "ครูมีความซื่อสัตย์ จริงใจ รักษาคำพูดและข้อตกลงร่วมกัน"}]}, {"name": "ด้านการมีมนุษยสัมพันธ์", "items": [{"no": 16, "text": "ครูมีอัธยาศัยไมตรี เป็นมิตร และวางตนเหมาะสมต่อเพื่อนร่วมงาน"}, {"no": 17, "text": "ครูเข้าร่วมกิจกรรมของทีมอย่างสม่ำเสมอทั้งในและนอกเวลาปฏิบัติงาน"}, {"no": 18, "text": "ครูร่วมกันสร้างบรรยากาศการทำงานที่อบอุ่น ผ่อนคลาย และเปิดกว้าง"}, {"no": 19, "text": "ครูยอมรับความแตกต่างระหว่างบุคคลและปรับตัวเข้ากับผู้อื่นได้ดี"}, {"no": 20, "text": "ครูมีความสามัคคีและเป็นอันหนึ่งอันเดียวกัน"}]}, {"name": "ด้านการกำหนดบทบาทหน้าที่", "items": [{"no": 21, "text": "ทีมกำหนดบทบาทหน้าที่และขอบเขตความรับผิดชอบของครูแต่ละคนไว้อย่างชัดเจน"}, {"no": 22, "text": "ครูได้รับมอบหมายงานสอดคล้องกับความรู้ ความสามารถ ทักษะ และความถนัดของแต่ละคน"}, {"no": 23, "text": "ภาระงานกระจายแก่ครูอย่างทั่วถึงและเป็นธรรม"}, {"no": 24, "text": "ครูเข้าใจและปฏิบัติตามบทบาทของตนทั้งด้านงานและด้านการสนับสนุนความสัมพันธ์ภายในทีม"}, {"no": 25, "text": "ครูเกื้อหนุนและปฏิบัติงานทดแทนกันได้เมื่อจำเป็น โดยมีอิสระในการปฏิบัติงานพอสมควร"}]}]}];
-const PART_SHORT = {1:"ข้อมูลทั่วไป",2:"ความฉลาดทางอารมณ์",3:"ทำงานเป็นทีม"};
+const PART_SHORT = {0:"ข้อเสนอแนะทั่วไป",1:"ข้อมูลทั่วไป",2:"ความฉลาดทางอารมณ์",3:"ทำงานเป็นทีม"};
 
 /* ---------- ข้อมูลข้อคำถาม ---------- */
 const SEQ = [];
@@ -139,10 +141,14 @@ PARTS.forEach(p=>p.groups.forEach((g,gi)=>g.items.forEach((it,ii)=>{
   SEQ.push({part:p.part,no:it.no,group:g.name,text:it.text,options:it.options||null,
     sub:(p.part===1?null:(gi+1)+"."+(ii+1))});
 })));
+/* ช่องท้ายสุด: ข้อเสนอแนะทั่วไปเพิ่มเติม (part 0) */
+const GEN_TEXT="ข้อเสนอแนะทั่วไปเพิ่มเติม";
+SEQ.push({part:0,no:1,group:"",text:GEN_TEXT,options:null,sub:null,general:true});
+const QN=SEQ.length-1;
 const keyOf=(e,p,n)=>e+"-"+p+"-"+n;
 const itemOf=(p,n)=>SEQ.find(s=>s.part===p&&s.no===n);
 const idxOf=(p,n)=>SEQ.findIndex(s=>s.part===p&&s.no===n);
-const labelOf=s=>"ข้อ "+s.no+(s.sub?" ("+s.sub+")":"");
+const labelOf=s=>s.general?GEN_TEXT:"ข้อ "+s.no+(s.sub?" ("+s.sub+")":"");
 const fullText=s=>s.options?s.text+" ("+s.options.join(" / ")+")":s.text;
 
 /* ---------- ฐานข้อมูล ---------- */
@@ -201,7 +207,7 @@ function setStatus(k,st){
 /* ---------- หน้าจอ ---------- */
 function route(){
   const h=decodeURIComponent(location.hash.replace(/^#/,""));
-  const m=h.match(/^e([1-5])(?:\/([1-3])\/(\d+))?$/);
+  const m=h.match(/^e([1-5])(?:\/([0-3])\/(\d+))?$/);
   if(!m) return {v:"home"};
   if(m[2]) return {v:"item",e:+m[1],p:+m[2],n:+m[3]};
   return {v:"expert",e:+m[1],p:+(sessionStorageGet("part"+m[1])||2)};
@@ -259,7 +265,7 @@ async function render(soft){
 }
 function viewHome(){
   const total=EXPERTS.reduce((a,x)=>a+countFor(x.id),0);
-  topRow('<img class="logo" src="logo.png" alt="" width="40" height="40"><h1>ข้อเสนอแนะผู้เชี่ยวชาญ<small>แบบประเมิน IOC · '+SEQ.length+' ข้อ</small></h1>'+liveHtml+exportBtn(""));
+  topRow('<img class="logo" src="logo.png" alt="" width="40" height="40"><h1>ข้อเสนอแนะผู้เชี่ยวชาญ<small>แบบประเมิน IOC · '+QN+' ข้อ</small></h1>'+liveHtml+exportBtn(""));
   $("#app").innerHTML='<p class="intro">เลือกผู้เชี่ยวชาญที่ต้องการบันทึกข้อเสนอแนะ ข้อความจะบันทึกอัตโนมัติและเห็นพร้อมกันทุกเครื่อง · ตอนนี้มีทั้งหมด <b>'+total+'</b> ข้อ</p><div class="cards">'+
   EXPERTS.map(x=>'<button class="card" data-go="e'+x.id+'"><span class="num">'+x.id+'</span><span class="who"><b>'+esc(x.name)+'</b><span class="pos">'+esc(x.pos)+'</span></span><span class="badge">'+countFor(x.id)+'<small>ข้อที่มีคอมเมนต์</small></span></button>').join("")+'</div>';
 }
@@ -270,26 +276,28 @@ function viewExpert(r){
   const groups=part.groups.map(g=>'<section class="group"><h3>'+(r.p===1?"ข้อมูลทั่วไปของผู้ตอบ":esc(g.name))+'</h3><div class="chips">'+
     g.items.map(it=>{const has=(cache[keyOf(x.id,r.p,it.no)]||{}).comment?.trim();const s=itemOf(r.p,it.no);
       return '<button class="chip'+(has?" has":"")+'" data-go="e'+x.id+'/'+r.p+'/'+it.no+'" aria-label="'+esc(labelOf(s))+(has?" มีคอมเมนต์":"")+'">'+it.no+(s.sub?'<small>'+s.sub+'</small>':'')+'</button>'}).join("")+'</div></section>').join("");
-  $("#app").innerHTML=tabs+'<p class="ptitle">'+esc(part.title)+'</p><div class="legend"><span><i class="has"></i>มีข้อเสนอแนะ</span><span><i></i>ยังไม่มี</span></div>'+groups;
+  const gHas=(cache[keyOf(x.id,0,1)]||{}).comment?.trim();
+  const gen='<section class="group"><h3>ท้ายแบบประเมิน</h3><button class="gen'+(gHas?" has":"")+'" data-go="e'+x.id+'/0/1">✎ '+GEN_TEXT+'<small>'+(gHas?"มีข้อความแล้ว":"ยังไม่มี")+'</small></button></section>';
+  $("#app").innerHTML=tabs+'<p class="ptitle">'+esc(part.title)+'</p><div class="legend"><span><i class="has"></i>มีข้อเสนอแนะ</span><span><i></i>ยังไม่มี</span></div>'+groups+gen;
 }
 function viewItem(r){
   const x=EXPERTS[r.e-1], s=itemOf(r.p,r.n), i=idxOf(r.p,r.n), k=keyOf(r.e,r.p,r.n);
   if(!s){location.hash="e"+r.e;return}
-  topRow('<button class="iconbtn" data-go="e'+r.e+'" aria-label="กลับไปรายการข้อ">‹ รายการ</button><h1>'+esc(x.short)+'<small>ตอน '+r.p+' · '+esc(labelOf(s))+'</small></h1>'+liveHtml);
+  topRow('<button class="iconbtn" data-go="e'+r.e+'" aria-label="กลับไปรายการข้อ">‹ รายการ</button><h1>'+esc(x.short)+'<small>'+(s.general?'ท้ายแบบประเมิน':'ตอน '+r.p+' · '+esc(labelOf(s)))+'</small></h1>'+liveHtml);
   const val=(cache[k]||{}).comment||"";
-  $("#app").innerHTML='<div class="q"><div class="meta">ตอนที่ '+r.p+' '+esc(PART_SHORT[r.p])+(r.p>1?' · '+esc(s.group):'')+'</div><p><b>'+esc(labelOf(s))+'</b> '+esc(s.text)+'</p>'+(s.options?'<ul>'+s.options.map(o=>'<li>'+esc(o)+'</li>').join("")+'</ul>':'')+'</div>'+
-   '<label class="lbl" for="cm">ข้อเสนอแนะของ'+esc(x.short)+'</label><button type="button" class="tplbtn" id="tpl">✎ ดึงร่างแก้คำถาม</button><textarea id="cm" data-key="'+k+'" placeholder="พิมพ์ข้อแก้ไข / คอมเมนต์ของผู้เชี่ยวชาญ" enterkeyhint="done"></textarea><div class="status" id="st" data-key="'+k+'" aria-live="polite">พิมพ์แล้วบันทึกอัตโนมัติ</div><div class="pad-bar"></div>';
+  $("#app").innerHTML=(s.general?'<div class="q"><div class="meta">ท้ายแบบประเมิน</div><p><b>'+GEN_TEXT+'</b><br><span style="color:var(--muted);font-size:.92em">ข้อคิดเห็นภาพรวมอื่น ๆ ที่ไม่ได้เจาะจงรายข้อ</span></p>':'<div class="q"><div class="meta">ตอนที่ '+r.p+' '+esc(PART_SHORT[r.p])+(r.p>1?' · '+esc(s.group):'')+'</div><p><b>'+esc(labelOf(s))+'</b> '+esc(s.text)+'</p>')+(s.options?'<ul>'+s.options.map(o=>'<li>'+esc(o)+'</li>').join("")+'</ul>':'')+'</div>'+
+   '<label class="lbl" for="cm">ข้อเสนอแนะของ'+esc(x.short)+'</label>'+(s.general?'':'<button type="button" class="tplbtn" id="tpl">✎ ดึงร่างแก้คำถาม</button>')+'<textarea id="cm" data-key="'+k+'" placeholder="'+(s.general?'พิมพ์ข้อเสนอแนะทั่วไปเพิ่มเติม':'พิมพ์ข้อแก้ไข / คอมเมนต์ของผู้เชี่ยวชาญ')+'" enterkeyhint="done"></textarea><div class="status" id="st" data-key="'+k+'" aria-live="polite">พิมพ์แล้วบันทึกอัตโนมัติ</div><div class="pad-bar"></div>';
   const ta=$("#cm"); ta.value=val;
   ta.addEventListener("input",()=>queueSave(k,ta.value));
   ta.addEventListener("blur",()=>saveNow(k));
-  $("#tpl").addEventListener("click",()=>{
+  if(!s.general) $("#tpl").addEventListener("click",()=>{
     const head='แก้เป็น "', tpl=head+s.text+'"', cur=ta.value.replace(/\s+$/,"");
     const base=cur?cur+"\n":"";
     ta.value=base+tpl; queueSave(k,ta.value); ta.focus();
     const pos=base.length+tpl.length-1; ta.setSelectionRange(pos,pos);
   });
   const prev=SEQ[i-1], next=SEQ[i+1];
-  $("#barHost").innerHTML='<div class="bar"><div class="in"><button data-go="'+(prev?'e'+r.e+'/'+prev.part+'/'+prev.no:'')+'" '+(prev?'':'disabled')+'>‹ ก่อนหน้า</button><span class="pos">'+(i+1)+' / '+SEQ.length+'</span><button class="next" data-go="'+(next?'e'+r.e+'/'+next.part+'/'+next.no:'')+'" '+(next?'':'disabled')+'>ถัดไป ›</button></div></div>';
+  $("#barHost").innerHTML='<div class="bar"><div class="in"><button data-go="'+(prev?'e'+r.e+'/'+prev.part+'/'+prev.no:'')+'" '+(prev?'':'disabled')+'>‹ ก่อนหน้า</button><span class="pos">'+(s.general?'ข้อเสนอแนะทั่วไป':(i+1)+' / '+QN)+'</span><button class="next" data-go="'+(next?'e'+r.e+'/'+next.part+'/'+next.no:'')+'" '+(next?'':'disabled')+'>ถัดไป ›</button></div></div>';
   window.scrollTo(0,0);
 }
 
@@ -299,7 +307,7 @@ function collect(expertIds,withEmpty){
   expertIds.forEach(e=>{const x=EXPERTS[e-1];
     SEQ.forEach(s=>{const c=cache[keyOf(e,s.part,s.no)]; const t=(c&&c.comment||"").trim();
       if(!t&&!withEmpty) return;
-      rows.push({e,expert:x.name,part:s.part,partName:PART_SHORT[s.part],no:s.no,sub:s.sub||"",group:s.part===1?"":s.group,q:fullText(s),comment:t,updated:c&&c.updated_at?new Date(c.updated_at).toLocaleString("th-TH"):""});
+      rows.push({e,expert:x.name,general:!!s.general,part:s.general?"ทั่วไป":s.part,partName:PART_SHORT[s.part],no:s.general?"-":s.no,sub:s.sub||"",group:s.part<=1?"":s.group,q:s.general?GEN_TEXT:fullText(s),comment:t,updated:c&&c.updated_at?new Date(c.updated_at).toLocaleString("th-TH"):""});
     })});
   return rows;
 }
@@ -308,7 +316,7 @@ function buildText(rows,ids){
   ids.forEach(e=>{const x=EXPERTS[e-1]; const rs=rows.filter(r=>r.e===e);
     out+="ผู้เชี่ยวชาญคนที่ "+x.id+": "+x.name+"\n"+"-".repeat(40)+"\n";
     if(!rs.length) out+="(ไม่มีข้อเสนอแนะ)\n";
-    rs.forEach(r=>{out+="ตอนที่ "+r.part+" ข้อ "+r.no+(r.sub?" ("+r.sub+")":"")+"\nข้อคำถาม: "+r.q+"\nข้อเสนอแนะ: "+(r.comment||"-")+"\n\n"});
+    rs.forEach(r=>{out+=(r.general?GEN_TEXT+"\n"+(r.comment||"-")+"\n\n":"ตอนที่ "+r.part+" ข้อ "+r.no+(r.sub?" ("+r.sub+")":"")+"\nข้อคำถาม: "+r.q+"\nข้อเสนอแนะ: "+(r.comment||"-")+"\n\n")});
     out+="\n";});
   return out.trim()+"\n";
 }
